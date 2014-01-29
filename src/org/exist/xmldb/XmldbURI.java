@@ -255,10 +255,7 @@ LOG.debug("OUT3: " + uri.getRawPath());
         if ((uri.getScheme() != null) || (uri.getFragment() != null) || (uri.getQuery() != null)) {
             return (new FullXmldbURI(uri));
         }
-        // dub sez... make sure, the encoded path is passed on
-        // while this should make sense, one cannot remove resources with a slash in their name,
-        // when its like that, OTOH, why would such a feature make sense?
-        return (new XmldbURI(uri.getRawPath()));
+        return (new XmldbURI(uri));
         /*
         //TODO : get rid of this and use a more robust approach (dedicated constructor ?) -pb
         //TODO : use named constants
