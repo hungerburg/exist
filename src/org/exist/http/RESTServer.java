@@ -386,7 +386,11 @@ public class RESTServer {
         }
         // Process the request
         DocumentImpl resource = null;
-        final XmldbURI pathUri = XmldbURI.create(path);
+        // dub sez... path is understood to be already encoded
+        // eat trailing slash(es), else collection resources might not be found
+        String pathStr = path; // dub sez... path is final…and I dont know why
+        while(pathStr.endsWith("/")) { pathStr = pathStr.substring(0, pathStr.length()-1); }
+        final XmldbURI pathUri = XmldbURI.createInternal(pathStr);
         try {
             // check if path leads to an XQuery resource
             final String xquery_mime_type = MimeType.XQUERY_TYPE.getName();
