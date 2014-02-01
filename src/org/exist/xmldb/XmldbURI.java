@@ -151,51 +151,10 @@ public class XmldbURI implements Comparable<Object>, Serializable {
     }
 
     public static XmldbURI xmldbUriFor(String xmldbURI, boolean escape) throws URISyntaxException {
-LOG.debug("  IN: " + xmldbURI);
         if (xmldbURI == null) {
             return (null);
         }
-        // dub sez... We are promised above to only ever get a path-segment here.
-        // Yet, looking at what is thrown at us, this does not hold:
-        // - sometimes the path is "xmldb:exist://..."
-        //   most likely users meant the next constructor below?
-        // That out of the way, we hope the promise holds. Therefore we use the 4 args constructor
-        // - URI(String scheme, String host, String path, String fragment)
-        //   This is a very nice constructor, as it does the escaping just fine and according to spex.
-        // - A colon in the first segment of the path component may be treated as scheme,
-        //   prefix such a path with "./"
-        // Additionally, the path we get sometimes is percent-encoded, sometimes it isnt...
-        // - We just URLDecode to get the nice view, just beware the plus-sign
-
-        // Yet, what about bare percent-signs though? Is this possible at all:
-        // - how to tell, if a string is percent-encoded or not?
-        final URI uri;
-        int colon = xmldbURI.indexOf(':');
-        int slash = xmldbURI.indexOf('/');
-        if (xmldbURI.startsWith(XMLDB_SCHEME)) { // Do it the old way
-            uri = new URI(escape ? AnyURIValue.escape(xmldbURI) : xmldbURI);
-LOG.debug("OUT1: " + uri.getRawPath());
-        } else if ((colon != -1) && ((slash == -1) || (colon < slash))) { // Prefix
-            try {
-                xmldbURI = URLDecoder.decode(xmldbURI.replace("+", "%2B"), "UTF-8");
-            } catch (final UnsupportedEncodingException e) {
-                throw (new IllegalArgumentException(xmldbURI + " can not be properly escaped"));
-            }
-            // One should be able to prefix such a name, but then
-            // a nearly indelible resource with a slash in its name gets created
-            // webdav curiously seems to know about this, any mac user here?
-            uri = new URI(null, null, "./" + xmldbURI, null);
-LOG.debug("OUT2: " + uri.getRawPath());
-            throw (new IllegalArgumentException("Colons in paths are not supported: " + xmldbURI));
-        } else { // Pass on
-            try {
-                xmldbURI = URLDecoder.decode(xmldbURI.replace("+", "%2B"), "UTF-8");
-            } catch (final UnsupportedEncodingException e) {
-                throw (new IllegalArgumentException(xmldbURI + " can not be properly escaped"));
-            }
-            uri = new URI(null, null, xmldbURI, null);
-LOG.debug("OUT3: " + uri.getRawPath());
-        }
+        final URI uri = new URI(escape ? AnyURIValue.escape(xmldbURI) : xmldbURI);
         return (getXmldbURI(uri));
     }
 
