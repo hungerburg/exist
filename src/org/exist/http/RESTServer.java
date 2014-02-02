@@ -386,10 +386,12 @@ public class RESTServer {
         }
         // Process the request
         DocumentImpl resource = null;
-        // dub sez... path is understood to be already encoded
-        // eat trailing slash(es), else collection resources might not be found
         String pathStr = path; // dub sez... path is final…and I dont know why
+        // eat trailing slash(es), else collection resources might not be found
         while(pathStr.endsWith("/")) { pathStr = pathStr.substring(0, pathStr.length()-1); }
+        // collapse preceding slashes, else resources might not be found
+        while(pathStr.startsWith("//")) { pathStr = pathStr.substring(1); }
+        // path is understood to be already in its encoded form
         final XmldbURI pathUri = XmldbURI.createInternal(pathStr);
         try {
             // check if path leads to an XQuery resource
