@@ -17,29 +17,21 @@
  * along with this program; if not, write to the Free Software Foundation
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package org.exist.xmldb;
+package org.exist.util.function;
 
-import org.xmldb.api.base.CompiledExpression;
 /**
- * This is just a placeholder for an expression that has been compiled
- * on the server. It only stores the xquery string.
- * 
- * @author wolf
+ * Similar to {@link org.exist.util.function.BiFunctionE} but
+ * permits two statically know Exceptions to be thrown
  *
+ * @param <T> Function parameter 1 type
+ * @param <U> Function parameter 2 type
+ * @param <R> Function return type
+ * @param <E1> Function throws exception type
+ * @param <E2> Function throws exception type
+ *
+ * @author Adam Retter <adam.retter@googlemail.com>
  */
-public class RemoteCompiledExpression implements CompiledExpression {
-
-	private final String xquery;
-	
-	public RemoteCompiledExpression(final String xquery) {
-		this.xquery = xquery;
-	}
-
-	@Override
-	public void reset() {
-	}
-
-	public String getQuery() {
-		return xquery;
-	}
+@FunctionalInterface
+public interface BiFunction2E<T, U, R, E1 extends Throwable, E2 extends Throwable> {
+    R apply(final T t, final U u) throws E1, E2;
 }

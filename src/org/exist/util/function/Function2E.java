@@ -17,29 +17,27 @@
  * along with this program; if not, write to the Free Software Foundation
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
-package org.exist.xmldb;
+package org.exist.util.function;
 
-import org.xmldb.api.base.CompiledExpression;
+import java.util.Objects;
+
 /**
- * This is just a placeholder for an expression that has been compiled
- * on the server. It only stores the xquery string.
- * 
- * @author wolf
+ * Similar to {@link org.exist.util.function.FunctionE} but
+ * permits two statically know Exceptions to be thrown
  *
+ * @param <T> Function parameter type
+ * @param <R> Function return type
+ * @param <E1> Function throws exception type
+ * @param <E2> Function throws exception type
+ *
+ * @author Adam Retter <adam.retter@googlemail.com>
  */
-public class RemoteCompiledExpression implements CompiledExpression {
+@FunctionalInterface
+public interface Function2E<T, R, E1 extends Throwable, E2 extends Throwable> {
+    R apply(final T t) throws E1, E2;
 
-	private final String xquery;
-	
-	public RemoteCompiledExpression(final String xquery) {
-		this.xquery = xquery;
-	}
-
-	@Override
-	public void reset() {
-	}
-
-	public String getQuery() {
-		return xquery;
-	}
+    default <V> Function2E<T, V, E1, E2> andThen(Function2E<? super R, ? extends V, ? extends E1, ? extends E2> after) {
+        Objects.requireNonNull(after);
+        return (T t) -> after.apply(apply(t));
+    }
 }
